@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 #import numpy as np
 #import pandas as pd
+import zipfile
 import pickle
 import spacy  # Plotting tools
 
@@ -21,6 +22,7 @@ nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
+
 stop_words = stopwords.words('english')
 stop_words.extend(['code'])
 stop_w = list(set(stopwords.words('english'))) + ['[', ']', ',', '.', ':', '?', '(', ')', 'code']
@@ -35,6 +37,9 @@ with open('lda_model.pkl', 'rb') as f:
 
 with open('lda_scaler.pkl', 'rb') as f:
     lda_scaler = pickle.load(f)
+
+with zipfile.ZipFile('lda_xgboost_model.pkl.zip', 'r') as zip_ref:
+    zip_ref.extractall()
 
 with open('lda_xgboost_model.pkl', 'rb') as f:
     lda_xgboost_model = pickle.load(f)
