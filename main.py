@@ -17,12 +17,12 @@ import spacy.cli
 spacy.cli.download("en_core_web_sm")
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
-#stop_words = stopwords.words('english')
-#stop_words.extend(['code'])
 
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
+stop_words = stopwords.words('english')
+stop_words.extend(['code'])
 stop_w = list(set(stopwords.words('english'))) + ['[', ']', ',', '.', ':', '?', '(', ')', 'code']
 
 app = FastAPI()
