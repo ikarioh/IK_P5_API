@@ -13,8 +13,8 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 import gensim
 from gensim.utils import simple_preprocess
 
-#import spacy.cli
-#spacy.cli.download("en_core_web_sm")
+import spacy.cli
+spacy.cli.download("en_core_web_sm")
 
 stop_words = stopwords.words('english')
 stop_words.extend(['code'])
