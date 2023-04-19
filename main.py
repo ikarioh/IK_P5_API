@@ -23,6 +23,18 @@ nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
 app = FastAPI()
 
+with open('lda_id2word.pkl', 'rb') as f:
+    lda_id2word = pickle.load(f)
+
+with open('lda_model.pkl', 'rb') as f:
+    lda_model = pickle.load(f)
+
+'''with open('lda_scaler.pkl', 'rb') as f:
+    lda_scaler = pickle.load(f)
+
+with open('lda_xgboost_model.pkl', 'rb') as f:
+    lda_xgboost_model = pickle.load(f)'''
+
 
 def tokenizer_fct(sentence):
     # print(sentence)
@@ -104,6 +116,26 @@ def transform_lem_sentence_fct(text):
     # Do lemmatization keeping only noun, adj, vb, adv
     return lemmatization(data_words_nostops_test, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])[0]
 
+def transform_num(txt):
+    tt = transform_lem_sentence_fct(txt)
+    return lda_id2word.doc2bow(tt)
+
+
+def best_topics(min_proba=0.1, lda_topics=[]):
+    return sorted(list(filter(lambda p: p[1] > min_proba, [c for c in lda_topics])), key=lambda v: v[1], reverse=True)
+
+
+def key_words(text, min_prob_topics=0.1, min_prob_words=0.015):
+    text_1 = transform_bow_lem_fct(text)
+
+    text_num = transform_num(text_1)
+
+    text_lda = lda_model[text_num]
+
+    best_2_topics = [t[0] for t in best_topics(min_prob_topics, text_lda[0])][:2]
+
+    return best_2_topics, {t: list(filter(lambda p: p[1] > min_prob_words, lda_model.show_topic(t))) for t in best_2_topics}
+
 
 def get_matrix(topics):
     MATRIX = []
@@ -118,19 +150,6 @@ def get_matrix(topics):
     return MATRIX
 
 
-with open('lda_id2word.pkl', 'rb') as f:
-    lda_id2word = pickle.load(f)
-
-with open('lda_model.pkl', 'rb') as f:
-    lda_model = pickle.load(f)
-
-with open('lda_scaler.pkl', 'rb') as f:
-    lda_scaler = pickle.load(f)
-
-with open('lda_xgboost_model.pkl', 'rb') as f:
-    lda_xgboost_model = pickle.load(f)
-
-
 class Sentence(BaseModel):
     question: str
 
@@ -139,8 +158,14 @@ class Sentence(BaseModel):
 def hello():
     return {"message": "Welcome! to the IK-P5-APP"}
 
+@app.post("/Words_proposition")
+async def propose(request: Sentence):
 
-@app.post("/Tags_prediction")
+    topics = key_words(request.question)
+
+    return {number: [w[0] for w in words] for number, words in topics[1].items()}
+
+'''@app.post("/Tags_prediction")
 async def predict(request: Sentence):
 
     sentense_ = transform_bow_lem_fct(request.question)
@@ -178,4 +203,4 @@ async def predict(request: Sentence):
     results = [tags[i] for i in index]
 
     # Return the prediction
-    return {"tags": results}
+    return {"tags": results}'''
