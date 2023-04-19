@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import pickle
 import spacy  # Plotting tools
 
-#import nltk
+import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 
@@ -15,11 +15,13 @@ from gensim.utils import simple_preprocess
 
 import spacy.cli
 spacy.cli.download("en_core_web_sm")
-
-stop_words = stopwords.words('english')
-stop_words.extend(['code'])
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
+#stop_words = stopwords.words('english')
+#stop_words.extend(['code'])
+
+nltk.download('stopwords')
+stop_w = list(set(stopwords.words('english'))) + ['[', ']', ',', '.', ':', '?', '(', ')', 'code']
 
 app = FastAPI()
 
@@ -41,12 +43,6 @@ def tokenizer_fct(sentence):
     sentence_clean = sentence.replace('-', ' ').replace('+', ' ').replace('/', ' ').replace('#', ' ')
     word_tokens = word_tokenize(sentence_clean)
     return word_tokens
-
-
-# Stop words
-from nltk.corpus import stopwords
-
-stop_w = list(set(stopwords.words('english'))) + ['[', ']', ',', '.', ':', '?', '(', ')']
 
 
 def stop_word_filter_fct(list_words):
