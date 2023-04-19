@@ -20,6 +20,7 @@ nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 #stop_words = stopwords.words('english')
 #stop_words.extend(['code'])
 
+nltk.download('punkt')
 nltk.download('stopwords')
 stop_w = list(set(stopwords.words('english'))) + ['[', ']', ',', '.', ':', '?', '(', ')', 'code']
 
