@@ -33,11 +33,11 @@ with open('lda_id2word.pkl', 'rb') as f:
 with open('lda_model.pkl', 'rb') as f:
     lda_model = pickle.load(f)
 
-'''with open('lda_scaler.pkl', 'rb') as f:
+with open('lda_scaler.pkl', 'rb') as f:
     lda_scaler = pickle.load(f)
 
 with open('lda_xgboost_model.pkl', 'rb') as f:
-    lda_xgboost_model = pickle.load(f)'''
+    lda_xgboost_model = pickle.load(f)
 
 
 def tokenizer_fct(sentence):
@@ -163,7 +163,7 @@ async def propose(request: Sentence):
 
     return {number: [w[0] for w in words] for number, words in topics[1].items()}
 
-'''@app.post("/Tags_prediction")
+@app.post("/Tags_prediction")
 async def predict(request: Sentence):
 
     sentense_ = transform_bow_lem_fct(request.question)
@@ -201,4 +201,4 @@ async def predict(request: Sentence):
     results = [tags[i] for i in index]
 
     # Return the prediction
-    return {"tags": results}'''
+    return {"tags": results}
